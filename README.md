@@ -39,7 +39,7 @@ npm start
 ```
 This install never ends, because fake registry emits endless archive
 
-# POC of npm endless data problem
+# POC of npm slow package retrieval
 
 * start fake registry
 ```bash
