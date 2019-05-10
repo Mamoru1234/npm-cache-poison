@@ -1,6 +1,7 @@
 const express = require('express');
 const proxy = require('express-http-proxy');
 const app = express();
+const { startApp } = require('./utils');
 
 const PORT = 6790;
 
@@ -35,10 +36,4 @@ app.use(proxy('registry.npmjs.org', {
     }
 }));
 
-app.listen(PORT, (err) => {
-    if (err) {
-        console.error('Error when starting');
-        console.error(err);
-    }
-    console.info('Server listening: ', PORT);
-});
+startApp(app, PORT);

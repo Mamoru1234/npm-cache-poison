@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
+    "endless": "node endles_data.js",
+    "slow": "node slow_data.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,6 +14,9 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.4",
-    "express-http-proxy": "^1.5.1"
+    "express-http-proxy": "^1.5.1",
+    "tar-stream": "^2.0.1",
+    "through2": "^3.0.1",
+    "uuid": "^3.3.2"
   }
 }
