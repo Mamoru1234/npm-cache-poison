@@ -5,35 +5,50 @@ const { startApp } = require('./utils');
 
 const PORT = 6790;
 
-// lp@1.3.0 -> prom@4.2.6 -> lp@1.2.0 -> prom@4.2.5 -> lp@1.3.0
+const invalidDep = {
+    'nan': '123214',
+};
 
-app.use(proxy('registry.npmjs.org', {
-    userResDecorator: (proxyRes, proxyResData, userReq) => {
-        console.info(`Method ${userReq.method} url: ${userReq.url}`);
-        if (userReq.method !== 'GET') {
-            return proxyResData;
-        }
-        const metadata = JSON.parse(proxyResData.toString());
-        if (metadata.name === 'left-pad') {
-            console.log('processing left-pad');
-            metadata.versions['1.3.0'].dependencies = {
-                'es6-promise': '4.2.6',
-            };
-            metadata.versions['1.2.0'].dependencies = {
-                'es6-promise': '4.2.5',
-            };
-        }
-        if (metadata.name === 'es6-promise') {
-            console.log('processing promise');
-            metadata.versions['4.2.6'].dependencies = {
-                'left-pad': '1.2.0',
-            };
-            metadata.versions['4.2.5'].dependencies = {
-                'left-pad': '1.3.0',
-            };
-        }
-        return JSON.stringify(metadata);
+const modifyMeta = (meta) => {
+    const targetVersion = meta.versions.find((version) => version.version === '1.3.0');
+    targetVersion.dependencies = invalidDep;
+};
+const IS_DRPM = false;
+
+const applyProxy = (app) => {
+    if (IS_DRPM) {
+        app.use(proxy('localhost:3000', {
+            userResDecorator: (proxyRes, proxyResData, userReq) => {
+                console.info(`Method ${userReq.method} url: ${userReq.url}`);
+                if (userReq.method !== 'GET') {
+                    return proxyResData;
+                }
+                const metadata = JSON.parse(proxyResData.toString());
+                if (metadata.payload.name === 'left-pad') {
+                    modifyMeta(metadata.payload);
+                }
+                return JSON.stringify(metadata);
+            }
+        }));
+    } else {
+        console.log('using npm');
+        app.use(proxy('registry.npmjs.org', {
+            userResDecorator: (proxyRes, proxyResData, userReq) => {
+                console.info(`Method ${userReq.method} url: ${userReq.url}`);
+                if (userReq.method !== 'GET') {
+                    return proxyResData;
+                }
+                const metadata = JSON.parse(proxyResData.toString());
+                if (metadata.name === 'left-pad') {
+                    console.log('processing left-pad');
+                    metadata.versions['1.3.0'].dependencies = invalidDep;
+                }
+                return JSON.stringify(metadata);
+            },
+        }))
     }
-}));
+};
+
+applyProxy(app);
 
 startApp(app, PORT);

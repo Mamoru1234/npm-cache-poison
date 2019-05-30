@@ -5,12 +5,21 @@
   "main": "index.js",
   "scripts": {
     "start": "npm cache clear -f && rm -rf node_modules/ package-lock.json && npm install",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/mocha/bin/mocha *.spec.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "left-pad": "^1.3.0"
+  },
+  "dspm": {
+    "plugins": [
+      "praesidiumProject"
+    ],
+    "presidiume": {
+      "publicKey": "/home/alexei/contribution/praesidiume/encryption_proxy/keys/public.key",
+      "repository": "http://localhost:6790"
+    }
   }
 }
